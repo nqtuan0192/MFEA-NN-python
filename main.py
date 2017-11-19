@@ -1,3 +1,4 @@
+import timeit
 import numpy as np
 from MFEATask import *
 from Chromosome import *
@@ -16,10 +17,11 @@ def main():
     print(TASKS_LAYERSIZE)
     print(TASKS)
     print(TASK_MAX)
-    c = Chromosome()
-    c.initialize_parameters()
-    c.print_parameters()
 
+    #test_sbx_operator(10)
+    #test_pmu_operator(10)
+
+    test_op_mutate()
 
 
 if __name__ == "__main__":
