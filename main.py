@@ -18,10 +18,7 @@ def main():
     print(TASKS)
     print(TASK_MAX)
 
-    #test_sbx_operator(10)
-    #test_pmu_operator(10)
-
-    test_op_mutate()
+    test_forward_propagation()
 
 
 if __name__ == "__main__":
