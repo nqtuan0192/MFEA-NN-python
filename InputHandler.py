@@ -53,8 +53,8 @@ class InputHandler:
             in_arr = np.array(in_tmp, dtype=float)
             out_arr = np.array(out_tmp)
             out_arr = out_arr.reshape((len(out_arr), 1))
-            print(in_arr)
-            print(out_arr)
+            #print(in_arr)
+            #print(out_arr)
             return in_arr, out_arr 
     def creditScreening(self, link):
         df = pd.read_csv(link, header=None, index_col=None)
@@ -99,6 +99,31 @@ class InputHandler:
         #print(in_arr)
         #print(out_arr.shape)
         return in_arr, out_arr
+        pass
+    def breastCancer(self, link):
+        with open(link, 'r') as f:
+            reader = csv.reader(f, delimiter=',')
+            in_tmp = []
+            out_tmp = []
+
+            data_list = list(reader)
+            for row in data_list:
+                for field in row:
+                    if(field == '?'):
+                        data_list.remove(row)
+            
+            np_data_list = np.array(data_list, dtype=float)
+            in_tmp = np_data_list[::1, 1:-1:]
+            out_tmp = np_data_list[::1, -1::]
+            #print(in_tmp)
+            #print(out_tmp)
+
+            minmax = preprocessing.MinMaxScaler()
+            in_minmax = minmax.fit_transform(in_tmp)
+            out_minmax = minmax.fit_transform(out_tmp)
+            print(in_minmax)
+            print(out_minmax)
+            return in_minmax, out_minmax
         pass
         
                     
