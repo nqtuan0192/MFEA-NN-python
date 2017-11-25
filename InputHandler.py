@@ -33,7 +33,7 @@ class InputHandler:
             output_arr = output_arr.reshape((len(output_arr), 1))
             #print(input_arr)
             #print(output_arr)
-            return input_arr, output_arr
+            return input_arr.T, output_arr.T
         pass
     def ionosphere(self, link):
         with open(link, "r") as f:
@@ -55,7 +55,7 @@ class InputHandler:
             out_arr = out_arr.reshape((len(out_arr), 1))
             #print(in_arr)
             #print(out_arr)
-            return in_arr, out_arr 
+            return in_arr.T, out_arr.T 
     def creditScreening(self, link):
         df = pd.read_csv(link, header=None, index_col=None)
 
@@ -93,8 +93,8 @@ class InputHandler:
         data_minmax = np.array(min_max.fit_transform(df))
         #print(data_minmax)
         dlen = len(data_minmax[0])
-        in_arr = np.array(data_minmax[::1, 0: dlen - 2])
-        out_arr = np.array(data_minmax[::1, -1::])
+        in_arr = np.array(data_minmax[::1, 0: dlen - 2]).T
+        out_arr = np.array(data_minmax[::1, -1::]).T
         #out_arr = out_arr.reshape((len(data_minmax), 1))
         #print(in_arr)
         #print(out_arr.shape)
@@ -119,10 +119,10 @@ class InputHandler:
             #print(out_tmp)
 
             minmax = preprocessing.MinMaxScaler()
-            in_minmax = minmax.fit_transform(in_tmp)
-            out_minmax = minmax.fit_transform(out_tmp)
-            print(in_minmax)
-            print(out_minmax)
+            in_minmax = minmax.fit_transform(in_tmp).T
+            out_minmax = minmax.fit_transform(out_tmp).T
+            #print(in_minmax)
+            #print(out_minmax)
             return in_minmax, out_minmax
         pass
         
