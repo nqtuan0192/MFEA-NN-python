@@ -11,7 +11,7 @@ class InputHandler:
             input_tmp = []
             output_tmp = []
             data_list = list(reader)
-            print(data_list)
+            #print(data_list)
             np.random.shuffle(data_list)
             for row in data_list:
                 tmp = []
@@ -22,17 +22,17 @@ class InputHandler:
                         tmp.append(0)
                     else:
                         tmp.append(-1)
-                output_tmp.append(tmp)
+                input_tmp.append(tmp)
                 if(row[-1] == 'positive'):
-                    input_tmp.append(1)
+                    output_tmp.append(1)
                 else:
-                    input_tmp.append(-1)
+                    output_tmp.append(-1)
 
             input_arr = np.array(input_tmp)
             output_arr = np.array(output_tmp)
 
-            print(input_arr)
-            print(output_arr)
+            #print(input_arr)
+            #print(output_arr)
             return input_arr, output_arr
         pass
     def ionosphere(self, link):
@@ -46,8 +46,11 @@ class InputHandler:
             for row in data_list:
                 tmp = row[:-1:]
                 in_tmp.append(tmp)
-                out_tmp.append(row[-1])
-            in_arr = np.array(in_tmp)
+                if(row[-1] == 'g'):
+                    out_tmp.append(0)
+                else:
+                    out_tmp.append(1)
+            in_arr = np.array(in_tmp, dtype=float)
             out_arr = np.array(out_tmp)
             print(in_arr)
             print(out_arr)
@@ -69,14 +72,14 @@ class InputHandler:
             for i in reversed(delete_idx):
                 df.drop(i, inplace=True)
             pass
-            print(df)
+            #print(df)
         except ValueError as e:
             print(ridx)
             pass
         # except IndexError as e_i:
         #     print(ridx)
         #     pass
-        df = df.convert_objects(convert_numeric=True)
+        #df = df.convert_objects(convert_numeric=True)
         for col in df.columns.values:
             #print(df[col].dtypes)
             if df[col].dtypes == 'object':
@@ -86,10 +89,13 @@ class InputHandler:
                 df[col] = labelEncoder.transform(df[col])
         
     
-        data_minmax = min_max.fit_transform(df)
+        data_minmax = np.array(min_max.fit_transform(df))
+        #print(data_minmax)
         dlen = len(data_minmax[0])
-        out_arr = np.array(data_minmax[::1, dlen - 1])
-        in_arr = np.array([data_minmax[::1, -1]])
+        in_arr = np.array(data_minmax[::1, 0: dlen - 2])
+        out_arr = np.array([data_minmax[::1, -1]])
+        print(in_arr)
+        print(out_arr)
         return in_arr, out_arr
         pass
         
