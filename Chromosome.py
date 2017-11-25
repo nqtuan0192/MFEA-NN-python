@@ -1,6 +1,6 @@
 from MFEATask import *
 from datetime import datetime
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 class Chromosome:
     global TRAINING_SIZE
@@ -572,4 +572,4 @@ def test_forward_propagation():
     print(AL > 0.5)
     print(compute_cost(AL, Y_train))
 
-    parameters = L_layer_model(X_train, Y_train, TASK_MAX, num_iterations=2500, print_cost=True)
+    parameters = L_layer_model(X_train, Y_train, TASK_MAX, num_iterations=2500, learning_rate=0.5, print_cost=True)
