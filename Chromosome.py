@@ -1,70 +1,65 @@
-from MFEATask import *
+import MFEATask as gv
 from datetime import datetime
 import matplotlib.pyplot as plt
 
+from InputHandler import *
+
+
 class Chromosome:
-    global TRAINING_SIZE
-    global TESTING_SIZE
+    scalar_fitness = -1.0  # float
+    skill_factor = 0  # uint
 
-    global NUMBEROF_TASKS
-    global NUMBEROF_LAYERS
-    global TASKS
-    global TASKS_MAX
+    factorial_costs = []  # list of float, size = numberof_tasks
+    factorial_rank = []  # list of uint, size = numberof_tasks
+    accuracy = []  # list of float, size = numberof_tasks
 
-    global NUMBEROF_INPUT
-    global NUMBEROF_OUTPUT
-
-
-    scalar_fitness = -1.0   # float
-    skill_factor = 0        # uint
-
-    factorial_costs = []    # list of float, size = numberof_tasks
-    factorial_rank = []     # list of uint, size = numberof_tasks
-    accuracy = []           # list of float, size = numberof_tasks
-
-    #parameters = {}                  # weights and biases, dictionary of np.ndarray, size = numberof_layers
+    # parameters = {}                  # weights and biases, dictionary of np.ndarray, size = numberof_layers
 
     def __init__(self):
         print('init')
 
         self.scalar_fitness = -1.0  # float
-        self.skill_factor = 0       # uint
+        self.skill_factor = 0  # uint
 
-        self.factorial_costs = []   # list of float, size = numberof_tasks
-        self.factorial_rank = []    # list of uint, size = numberof_tasks
-        self.accuracy = []          # list of float, size = numberof_tasks
+        self.factorial_costs = []  # list of float, size = numberof_tasks
+        self.factorial_rank = []  # list of uint, size = numberof_tasks
+        self.accuracy = []  # list of float, size = numberof_tasks
 
-        self.parameters = {}        # weights and biases, dictionary of np.ndarray, size = numberof_layers
+        self.parameters = {}  # weights and biases, dictionary of np.ndarray, size = numberof_layers
 
     def initialize_parameters(self):
-        #np.random.seed(datetime.now())
-        L = len(TASK_MAX)
+        # np.random.seed(datetime.now())
+        L = len(gv.TASK_MAX)
         for layer in range(1, L):
-            self.parameters['W' + str(layer)] = np.random.rand(TASK_MAX[layer], TASK_MAX[layer - 1])
-            self.parameters['b' + str(layer)] = np.random.rand(TASK_MAX[layer], 1)
+            self.parameters['W' + str(layer)] = np.random.rand(gv.TASK_MAX[layer], gv.TASK_MAX[layer - 1])
+            self.parameters['b' + str(layer)] = np.random.rand(gv.TASK_MAX[layer], 1)
 
     def print_parameters(self):
-        L = len(TASK_MAX)
+        L = len(gv.TASK_MAX)
         for layer in range(1, L):
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
 
     def forward_eval(self):
-        L = len(TASK_MAX)
-#end class Chromosome
+        L = len(gv.TASK_MAX)
+
+
+# end class Chromosome
 
 def sbx_beta_transform(array, distribution_index):
     ret = np.empty(array.shape)
     idx = array <= 0.5
     ret[idx] = (2.0 * array[idx]) ** (1.0 / (distribution_index + 1))
-    idx = array > 0.5 # need check
+    idx = array > 0.5  # need check
     ret[idx] = (1.0 / (2.0 * (1.0 - array[idx]))) ** (1.0 / (distribution_index + 1.0))
     return ret
 
+
 def sbx_children_generate(p1, p2, v_rand):
-	c1 = 0.5 * ((1 + v_rand) * p1 + (1 - v_rand) * p2)
-	c2 = 0.5 * ((1 - v_rand) * p1 + (1 + v_rand) * p2)
-	return (c1, c2)
+    c1 = 0.5 * ((1 + v_rand) * p1 + (1 - v_rand) * p2)
+    c2 = 0.5 * ((1 - v_rand) * p1 + (1 + v_rand) * p2)
+    return (c1, c2)
+
 
 def test_sbx_operator(loop):
     np.random.seed(1)
@@ -81,7 +76,7 @@ def test_sbx_operator(loop):
     print('c1 = ', c1)
     print('c2 = ', c2)
 
-    return (c1, c2)
+    return c1, c2
 
 
 def pmu_children_generate(p, r, mu_ratio, pmu_index):
@@ -104,6 +99,7 @@ def pmu_children_generate(p, r, mu_ratio, pmu_index):
             rc[i] = rp[i]
     return c
 
+
 def test_pmu_operator(loop):
     np.random.seed(1)
     p = np.random.rand(1, 10)
@@ -118,10 +114,9 @@ def test_pmu_operator(loop):
     return c
 
 
-
 def op_crossover(chromo1, chromo2, cf_distributionindex):
     (child1, child2) = Chromosome(), Chromosome()
-    L = len(TASK_MAX)
+    L = len(gv.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         r = np.random.random(chromo1.parameters['W' + str(layer)].shape)
@@ -135,9 +130,10 @@ def op_crossover(chromo1, chromo2, cf_distributionindex):
             chromo1.parameters['b' + str(layer)], chromo2.parameters['b' + str(layer)], r)
     return (child1, child2)
 
+
 def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio):
     child = Chromosome()
-    L = len(TASK_MAX)
+    L = len(gv.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         r = np.random.random(chromo.parameters['W' + str(layer)].shape)
@@ -147,6 +143,7 @@ def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio):
         child.parameters['b' + str(layer)] = pmu_children_generate(chromo.parameters['b' + str(layer)], r,
                                                                    mf_mutationratio, mf_polynomialmutationindex)
     return child
+
 
 def test_op_crossover():
     np.random.seed(1)
@@ -158,13 +155,14 @@ def test_op_crossover():
 
     (child1, child2) = op_crossover(idv1, idv2, 3.0)
 
-    L = len(TASK_MAX)
+    L = len(gv.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         print('weight check', layer, (idv1.parameters['W' + str(layer)] + idv2.parameters['W' + str(layer)]) - (
-        child1.parameters['W' + str(layer)] + child2.parameters['W' + str(layer)]))
+            child1.parameters['W' + str(layer)] + child2.parameters['W' + str(layer)]))
         print('biases check', layer, (idv1.parameters['b' + str(layer)] + idv2.parameters['b' + str(layer)]) - (
-        child1.parameters['b' + str(layer)] + child2.parameters['b' + str(layer)]))
+            child1.parameters['b' + str(layer)] + child2.parameters['b' + str(layer)]))
+
 
 def test_op_mutate():
     np.random.seed(1)
@@ -176,23 +174,24 @@ def test_op_mutate():
     idv.print_parameters()
     child.print_parameters()
 
-    L = len(TASK_MAX)
+    L = len(gv.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         print('weight diff', layer, idv.parameters['W' + str(layer)] - child.parameters['W' + str(layer)])
         print('biases diff', layer, idv.parameters['b' + str(layer)] - child.parameters['b' + str(layer)])
 
 
-
-
 def np_sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x)), x
+
 
 def np_tanh(x):
     return np.tanh(x), x
 
+
 def np_relu(x):
     return np.maximum(0, x), x
+
 
 def linear_forward(A, W, b):
     """
@@ -209,14 +208,15 @@ def linear_forward(A, W, b):
     """
 
     ### START CODE HERE ### (≈ 1 line of code)
-    Z = np.dot(W * 10 - 5, A) + (b)     # W : (0, 1) => (-5, 5)
-                                                # b : (0, 1) => (-1, 1)
+    Z = np.dot(W, A) + (b)  # W : (0, 1) => (-5, 5)
+    # b : (0, 1) => (-1, 1)
     ### END CODE HERE ###
 
     assert (Z.shape == (W.shape[0], A.shape[1]))
     cache = (A, W, b)
 
     return Z, cache
+
 
 def linear_activation_forward(A_prev, W, b, activation):
     """
@@ -313,7 +313,8 @@ def compute_cost(AL, Y):
 
     # Compute loss from aL and y.
     ### START CODE HERE ### (≈ 1 lines of code)
-    cost = -1.0 / m * np.sum((Y * np.log(AL) + (1 - Y) * np.log(1 - AL)))
+    #cost = -1.0 / m * np.sum((Y * np.log(AL) + (1 - Y) * np.log(1 - AL)))
+    cost = 1.0 / m * np.sum(np.power(Y - AL, 2))
     ### END CODE HERE ###
 
     cost = np.squeeze(cost)  # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
@@ -327,15 +328,18 @@ def sigmoid_backward(dA, activation_cache):
     dZ = dA * (A * (1 - A))
     return dZ
 
+
 def relu_backward(dA, activation_cache):
     A = activation_cache
     dZ = dA * (A > 0)
     return dZ
 
+
 def tanh_backward(dA, activation_cache):
     A = activation_cache
     dZ = dA * (1 - A ** 2)
     return dZ
+
 
 def linear_backward(dZ, cache):
     """
@@ -500,6 +504,7 @@ def initialize_parameters_deep(layer_dims):
 
     return parameters
 
+
 def L_layer_model(X, Y, layers_dims, learning_rate=0.0075, num_iterations=3000, print_cost=False):  # lr was 0.009
     """
     Implements a L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
@@ -562,9 +567,19 @@ def L_layer_model(X, Y, layers_dims, learning_rate=0.0075, num_iterations=3000, 
 
     return parameters
 
+
 def test_forward_propagation():
-    X_train = (np.random.random((NUMBEROF_INPUT, TRAINING_SIZE)) - 0.5).astype(float)
-    Y_train = (np.random.random((NUMBEROF_OUTPUT, TRAINING_SIZE)) > 0.5).astype(float)
+    inputHandler = InputHandler()
+    X_train, Y_train = inputHandler.ionosphere(link=gv.DATASET_IONOSPHERE)
+
+    gv.TRAINING_SIZE = X_train.shape[1]
+    gv.TESTING_SIZE = X_train.shape[1]
+
+    gv.NUMBEROF_INPUT = X_train.shape[0]
+    gv.NUMBEROF_OUTPUT = Y_train.shape[0]
+
+    gv.redefineTasks()
+
     idv = Chromosome()
     idv.initialize_parameters()
     AL, caches = L_model_forward(X_train, idv.parameters)
@@ -572,4 +587,4 @@ def test_forward_propagation():
     print(AL > 0.5)
     print(compute_cost(AL, Y_train))
 
-    parameters = L_layer_model(X_train, Y_train, TASK_MAX, num_iterations=2500, learning_rate=0.5, print_cost=True)
+    parameters = L_layer_model(X_train, Y_train, gv.TASK_MAX, num_iterations=2500, learning_rate=0.5, print_cost=True)
