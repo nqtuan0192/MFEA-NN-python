@@ -30,7 +30,7 @@ class InputHandler:
 
             input_arr = np.array(input_tmp)
             output_arr = np.array(output_tmp)
-
+            output_arr = output_arr.reshape((len(output_arr), 1))
             #print(input_arr)
             #print(output_arr)
             return input_arr, output_arr
@@ -52,6 +52,7 @@ class InputHandler:
                     out_tmp.append(1)
             in_arr = np.array(in_tmp, dtype=float)
             out_arr = np.array(out_tmp)
+            out_arr = out_arr.reshape((len(out_arr), 1))
             print(in_arr)
             print(out_arr)
             return in_arr, out_arr 
@@ -74,7 +75,7 @@ class InputHandler:
             pass
             #print(df)
         except ValueError as e:
-            print(ridx)
+            #print(ridx)
             pass
         # except IndexError as e_i:
         #     print(ridx)
@@ -93,9 +94,10 @@ class InputHandler:
         #print(data_minmax)
         dlen = len(data_minmax[0])
         in_arr = np.array(data_minmax[::1, 0: dlen - 2])
-        out_arr = np.array([data_minmax[::1, -1]])
-        print(in_arr)
-        print(out_arr)
+        out_arr = np.array(data_minmax[::1, -1::])
+        #out_arr = out_arr.reshape((len(data_minmax), 1))
+        #print(in_arr)
+        #print(out_arr.shape)
         return in_arr, out_arr
         pass
         
