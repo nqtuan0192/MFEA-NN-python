@@ -1,4 +1,4 @@
-import MFEATask as gv
+import MFEATask as mfeatask
 from datetime import datetime
 import matplotlib.pyplot as plt
 
@@ -6,14 +6,6 @@ from InputHandler import *
 
 
 class Chromosome:
-    scalar_fitness = -1.0  # float
-    skill_factor = 0  # uint
-
-    factorial_costs = []  # list of float, size = numberof_tasks
-    factorial_rank = []  # list of uint, size = numberof_tasks
-    accuracy = []  # list of float, size = numberof_tasks
-
-    # parameters = {}                  # weights and biases, dictionary of np.ndarray, size = numberof_layers
 
     def __init__(self):
         print('init')
@@ -29,13 +21,13 @@ class Chromosome:
 
     def initialize_parameters(self):
         # np.random.seed(datetime.now())
-        L = len(gv.TASK_MAX)
+        L = len(mfeatask.TASK_MAX)
         for layer in range(1, L):
-            self.parameters['W' + str(layer)] = np.random.rand(gv.TASK_MAX[layer], gv.TASK_MAX[layer - 1])
-            self.parameters['b' + str(layer)] = np.random.rand(gv.TASK_MAX[layer], 1)
+            self.parameters['W' + str(layer)] = np.random.rand(mfeatask.TASK_MAX[layer], mfeatask.TASK_MAX[layer - 1])
+            self.parameters['b' + str(layer)] = np.random.rand(mfeatask.TASK_MAX[layer], 1)
 
     def print_parameters(self):
-        L = len(gv.TASK_MAX)
+        L = len(mfeatask.TASK_MAX)
         for layer in range(1, L):
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
@@ -134,7 +126,7 @@ def test_pmu_operator(loop):
 
 def op_crossover(chromo1, chromo2, cf_distributionindex):
     (child1, child2) = Chromosome(), Chromosome()
-    L = len(gv.TASK_MAX)
+    L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         r = np.random.random(chromo1.parameters['W' + str(layer)].shape)
@@ -151,7 +143,7 @@ def op_crossover(chromo1, chromo2, cf_distributionindex):
 
 def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio):
     child = Chromosome()
-    L = len(gv.TASK_MAX)
+    L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         r = np.random.random(chromo.parameters['W' + str(layer)].shape)
@@ -173,7 +165,7 @@ def test_op_crossover():
 
     (child1, child2) = op_crossover(idv1, idv2, 3.0)
 
-    L = len(gv.TASK_MAX)
+    L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         print('weight check', layer, (idv1.parameters['W' + str(layer)] + idv2.parameters['W' + str(layer)]) - (
@@ -192,7 +184,7 @@ def test_op_mutate():
     idv.print_parameters()
     child.print_parameters()
 
-    L = len(gv.TASK_MAX)
+    L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
         print('weight diff', layer, idv.parameters['W' + str(layer)] - child.parameters['W' + str(layer)])
@@ -587,24 +579,50 @@ def L_layer_model(X, Y, layers_dims, learning_rate=0.0075, num_iterations=3000, 
 
 
 def test_forward_propagation():
+
     inputHandler = InputHandler()
-    X_train, Y_train = inputHandler.ionosphere(link=gv.DATASET_IONOSPHERE)
+    X_train, Y_train = inputHandler.ionosphere(link=mfeatask.DATASET_IONOSPHERE)
 
-    gv.TRAINING_SIZE = X_train.shape[1]
-    gv.TESTING_SIZE = X_train.shape[1]
+    mfeatask.TRAINING_SIZE = X_train.shape[1]
+    mfeatask.TESTING_SIZE = X_train.shape[1]
 
-    gv.NUMBEROF_INPUT = X_train.shape[0]
-    gv.NUMBEROF_OUTPUT = Y_train.shape[0]
+    mfeatask.NUMBEROF_INPUT = X_train.shape[0]
+    mfeatask.NUMBEROF_OUTPUT = Y_train.shape[0]
 
-    gv.redefineTasks()
+    mfeatask.redefineTasks()
+
 
     idv = Chromosome()
     idv.initialize_parameters()
     AL, caches = L_model_forward(X_train, idv.parameters)
     task = 2
-    AL2 = idv.forward_eval(gv.TASKS_LAYERSIZE[task], gv.TASKS[task], X_train, Y_train)
+    AL2 = idv.forward_eval(mfeatask.TASKS_LAYERSIZE[task], mfeatask.TASKS[task], X_train, Y_train)
+
+
+    for i in range(100):
+        idv = Chromosome()
+        idv.initialize_parameters()
+        temp = idv.forward_eval(mfeatask.TASKS_LAYERSIZE[task], mfeatask.TASKS[task], X_train, Y_train)
+        print(temp)
+
     print('AL = ', AL)
     print(AL > 0.5)
     print(compute_cost(AL, Y_train))
 
-    parameters = L_layer_model(X_train, Y_train, gv.TASK_MAX, num_iterations=2500, learning_rate=0.5, print_cost=True)
+    parameters = L_layer_model(X_train, Y_train, mfeatask.TASK_MAX, num_iterations=2500, learning_rate=0.5, print_cost=True)
+
+def test_idv_eval(n):
+    inputHandler = InputHandler()
+    X_train, Y_train = inputHandler.ionosphere(link=mfeatask.DATASET_IONOSPHERE)
+    mfeatask.TRAINING_SIZE = X_train.shape[1]
+    mfeatask.TESTING_SIZE = X_train.shape[1]
+
+    mfeatask.NUMBEROF_INPUT = X_train.shape[0]
+    mfeatask.NUMBEROF_OUTPUT = Y_train.shape[0]
+
+    mfeatask.redefineTasks()
+    for i in range(n):
+        idv = Chromosome()
+        idv.initialize_parameters()
+        temp = idv.forward_eval(mfeatask.TASKS_LAYERSIZE[2], mfeatask.TASKS[2], X_train, Y_train)
+        print(temp)

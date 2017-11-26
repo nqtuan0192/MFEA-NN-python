@@ -18,6 +18,7 @@ def main():
     print(gv.TASKS)
     print(gv.TASK_MAX)
 
+
     test_forward_propagation()
 
 
