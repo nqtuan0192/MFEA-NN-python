@@ -40,8 +40,26 @@ class Chromosome:
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
 
-    def forward_eval(self):
-        L = len(gv.TASK_MAX)
+    def forward_eval(self, L, task, X, Y):
+        A = X
+        for l in range(1, L):
+            Z = np.dot(self.parameters['W' + str(l)], A) + self.parameters['b' + str(l)]
+            A = np.maximum(0, Z)
+
+        ZL =  np.dot(self.parameters['W' + str(L)], A) + self.parameters['b' + str(L)]
+        AL = 1.0 / (1.0 + np.exp(-ZL))
+
+        cost = 0.5 * np.mean((Y - AL) ** 2) # 1 / (2 * m) * (Y - Ypredict)^2
+
+        lambd = 0.1
+        m = Y.shape[1]
+        L2_regularization_cost = 0
+        for l in range(1, L + 1):
+            L2_regularization_cost = L2_regularization_cost + np.sum(np.square(self.parameters['W' + str(l)]))
+        L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
+
+        return cost # + L2_regularization_cost
+
 
 
 # end class Chromosome
@@ -314,7 +332,7 @@ def compute_cost(AL, Y):
     # Compute loss from aL and y.
     ### START CODE HERE ### (≈ 1 lines of code)
     #cost = -1.0 / m * np.sum((Y * np.log(AL) + (1 - Y) * np.log(1 - AL)))
-    cost = 1.0 / m * np.sum(np.power(Y - AL, 2))
+    cost = 0.5 * np.mean((Y - AL) ** 2) # equivalent: 1.0 / (2 * m) * np.sum(np.power(Y - AL, 2))
     ### END CODE HERE ###
 
     cost = np.squeeze(cost)  # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
@@ -583,6 +601,8 @@ def test_forward_propagation():
     idv = Chromosome()
     idv.initialize_parameters()
     AL, caches = L_model_forward(X_train, idv.parameters)
+    task = 2
+    AL2 = idv.forward_eval(gv.TASKS_LAYERSIZE[task], gv.TASKS[task], X_train, Y_train)
     print('AL = ', AL)
     print(AL > 0.5)
     print(compute_cost(AL, Y_train))
