@@ -4,12 +4,20 @@ import matplotlib.pyplot as plt
 
 from InputHandler import *
 
+def np_sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-x))
+
+
+def np_tanh(x):
+    return np.tanh(x)
+
+
+def np_relu(x):
+    return np.maximum(0, x)
 
 class Chromosome:
 
     def __init__(self):
-        print('init')
-
         self.scalar_fitness = -1.0  # float
         self.skill_factor = 0  # uint
 
@@ -32,14 +40,27 @@ class Chromosome:
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
 
-    def forward_eval(self, L, task, X, Y):
+    def forward_eval(self, task, X, Y):
+        L = mfeatask.TASKS_LAYERSIZE[task]
+        layers = mfeatask.TASKS[task]
+
         A = X
         for l in range(1, L):
-            Z = np.dot(self.parameters['W' + str(l)], A) + self.parameters['b' + str(l)]
-            A = np.maximum(0, Z)
+            Wl = self.parameters['W' + str(l)].flatten()
+            Wl = Wl[0:layers[l] * layers[l - 1]].reshape(layers[l], layers[l - 1])
+            bl = self.parameters['b' + str(l)].flatten()
+            bl = bl[0:layers[l]].reshape(layers[l], 1)
 
-        ZL =  np.dot(self.parameters['W' + str(L)], A) + self.parameters['b' + str(L)]
-        AL = 1.0 / (1.0 + np.exp(-ZL))
+            Z = np.dot(Wl, A) + bl
+            A = np_relu(Z)
+
+        WL = self.parameters['W' + str(L)].flatten()
+        WL = WL[0:layers[L] * layers[L - 1]].reshape(layers[L], layers[L - 1])
+        bL = self.parameters['b' + str(L)].flatten()
+        bL = bL[0:layers[L]].reshape(layers[L], 1)
+
+        ZL =  np.dot(WL, A) + bL
+        AL = np_sigmoid(ZL)
 
         cost = 0.5 * np.mean((Y - AL) ** 2) # 1 / (2 * m) * (Y - Ypredict)^2
 
@@ -191,15 +212,15 @@ def test_op_mutate():
         print('biases diff', layer, idv.parameters['b' + str(layer)] - child.parameters['b' + str(layer)])
 
 
-def np_sigmoid(x):
+def sigmoid_forward(x):
     return 1.0 / (1.0 + np.exp(-x)), x
 
 
-def np_tanh(x):
+def tanh_foward(x):
     return np.tanh(x), x
 
 
-def np_relu(x):
+def relu_forward(x):
     return np.maximum(0, x), x
 
 
@@ -248,19 +269,19 @@ def linear_activation_forward(A_prev, W, b, activation):
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
         ### START CODE HERE ### (≈ 2 lines of code)
         Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = np_sigmoid(Z)
+        A, activation_cache = sigmoid_forward(Z)
         ### END CODE HERE ###
     elif activation == "relu":
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
         ### START CODE HERE ### (≈ 2 lines of code)
         Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = np_relu(Z)
+        A, activation_cache = relu_forward(Z)
         ### END CODE HERE ###
     elif activation == "tanh":
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
         ### START CODE HERE ### (≈ 2 lines of code)
         Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = np_tanh(Z)
+        A, activation_cache = tanh_foward(Z)
         ### END CODE HERE ###
 
     assert (A.shape == (W.shape[0], A_prev.shape[1]))
@@ -595,14 +616,13 @@ def test_forward_propagation():
     idv = Chromosome()
     idv.initialize_parameters()
     AL, caches = L_model_forward(X_train, idv.parameters)
-    task = 2
-    AL2 = idv.forward_eval(mfeatask.TASKS_LAYERSIZE[task], mfeatask.TASKS[task], X_train, Y_train)
+    AL2 = idv.forward_eval(1, X_train, Y_train)
 
 
     for i in range(100):
         idv = Chromosome()
         idv.initialize_parameters()
-        temp = idv.forward_eval(mfeatask.TASKS_LAYERSIZE[task], mfeatask.TASKS[task], X_train, Y_train)
+        temp = idv.forward_eval(1, X_train, Y_train)
         print(temp)
 
     print('AL = ', AL)
