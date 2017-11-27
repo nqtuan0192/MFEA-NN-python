@@ -19,7 +19,9 @@ def main():
     print(gv.TASK_MAX)
 
 
-    test_forward_propagation()
+    #test_forward_propagation()
+    mfea = MFEA(90, 1000)
+    mfea.evolution()
 
 
 
