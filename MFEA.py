@@ -83,4 +83,8 @@ class MFEA:
 
             self.population.sort(key=lambda chromo: chromo.scalar_fitness, reverse=True)
 
+
+        for idv in self.population:
+            idv.forward_eval(self.X_train, self.Y_train, is_eval_acc=True)
+
         print('test')

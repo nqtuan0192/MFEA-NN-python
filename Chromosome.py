@@ -42,7 +42,7 @@ class Chromosome:
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
 
-    def forward_eval(self, X, Y):
+    def forward_eval(self, X, Y, is_eval_acc=False):
         L = mfeatask.TASKS_LAYERSIZE[self.skill_factor]
         layers = mfeatask.TASKS[self.skill_factor]
 
@@ -64,6 +64,10 @@ class Chromosome:
         ZL =  np.dot(WL, A) + bL
         AL = np_sigmoid(ZL)
 
+        if is_eval_acc:
+            acc = ((Y > 0.5) == (AL > 0.5))
+            self.accuracy[self.skill_factor] = np.sum(acc) / len(acc.squeeze())
+
         cost = 0.5 * np.mean((Y - AL) ** 2) # 1 / (2 * m) * (Y - Ypredict)^2
 
         lambd = 0.1
@@ -74,7 +78,7 @@ class Chromosome:
         L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
 
         self.factorial_costs[self.skill_factor] = cost
-        return cost # + L2_regularization_cost
+        return cost + L2_regularization_cost
 
 
 
