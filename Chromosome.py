@@ -145,8 +145,7 @@ def test_pmu_operator(loop):
     return c
 
 
-def op_crossover(chromo1, chromo2, cf_distributionindex):
-    (child1, child2) = Chromosome(), Chromosome()
+def op_crossover(chromo1, chromo2, cf_distributionindex, child1, child2):
     L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
@@ -159,11 +158,9 @@ def op_crossover(chromo1, chromo2, cf_distributionindex):
         r = sbx_beta_transform(r, cf_distributionindex)
         (child1.parameters['b' + str(layer)], child2.parameters['b' + str(layer)]) = sbx_children_generate(
             chromo1.parameters['b' + str(layer)], chromo2.parameters['b' + str(layer)], r)
-    return (child1, child2)
 
 
-def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio):
-    child = Chromosome()
+def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio, child):
     L = len(mfeatask.TASK_MAX)
     # parallelizable
     for layer in range(1, L):
@@ -173,7 +170,22 @@ def op_mutate(chromo, mf_polynomialmutationindex, mf_mutationratio):
         r = np.random.random(chromo.parameters['b' + str(layer)].shape)
         child.parameters['b' + str(layer)] = pmu_children_generate(chromo.parameters['b' + str(layer)], r,
                                                                    mf_mutationratio, mf_polynomialmutationindex)
-    return child
+
+
+def op_uniformcrossover(chromo1, chromo2):
+    L = len(mfeatask.TASK_MAX)
+    # parallelizable
+    for layer in range(1, L):
+        r = np.random.random(chromo1.parameters['W' + str(layer)].shape)
+        t = chromo1.parameters['W' + str(layer)][r > 0.5]
+        chromo1.parameters['W' + str(layer)][r > 0.5] = chromo2.parameters['W' + str(layer)][r > 0.5]
+        chromo2.parameters['W' + str(layer)][r > 0.5] = t
+
+        r = np.random.random(chromo1.parameters['b' + str(layer)].shape)
+        t = chromo1.parameters['b' + str(layer)][r > 0.5]
+        chromo1.parameters['b' + str(layer)][r > 0.5] = chromo2.parameters['b' + str(layer)][r > 0.5]
+        chromo2.parameters['b' + str(layer)][r > 0.5] = t
+
 
 
 def test_op_crossover():
