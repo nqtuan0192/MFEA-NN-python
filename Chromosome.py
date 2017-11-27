@@ -21,9 +21,9 @@ class Chromosome:
         self.scalar_fitness = -1.0  # float
         self.skill_factor = 0  # uint
 
-        self.factorial_costs = []  # list of float, size = numberof_tasks
-        self.factorial_rank = []  # list of uint, size = numberof_tasks
-        self.accuracy = []  # list of float, size = numberof_tasks
+        self.factorial_costs = mfeatask.NUMBEROF_TASKS * [None]  # list of float, size = numberof_tasks
+        self.factorial_rank = mfeatask.NUMBEROF_TASKS * [None]  # list of uint, size = numberof_tasks
+        self.accuracy = mfeatask.NUMBEROF_TASKS * [None]  # list of float, size = numberof_tasks
 
         self.parameters = {}  # weights and biases, dictionary of np.ndarray, size = numberof_layers
 
@@ -40,9 +40,9 @@ class Chromosome:
             print('W' + str(layer), self.parameters['W' + str(layer)].shape, self.parameters['W' + str(layer)])
             print('b' + str(layer), self.parameters['b' + str(layer)].shape, self.parameters['b' + str(layer)])
 
-    def forward_eval(self, task, X, Y):
-        L = mfeatask.TASKS_LAYERSIZE[task]
-        layers = mfeatask.TASKS[task]
+    def forward_eval(self, X, Y):
+        L = mfeatask.TASKS_LAYERSIZE[self.skill_factor]
+        layers = mfeatask.TASKS[self.skill_factor]
 
         A = X
         for l in range(1, L):
@@ -71,6 +71,7 @@ class Chromosome:
             L2_regularization_cost = L2_regularization_cost + np.sum(np.square(self.parameters['W' + str(l)]))
         L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
 
+        self.factorial_costs[self.skill_factor] = cost
         return cost # + L2_regularization_cost
 
 
