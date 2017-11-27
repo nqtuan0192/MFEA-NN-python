@@ -1,3 +1,5 @@
+import sys
+
 import MFEATask as mfeatask
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -21,7 +23,7 @@ class Chromosome:
         self.scalar_fitness = -1.0  # float
         self.skill_factor = 0  # uint
 
-        self.factorial_costs = mfeatask.NUMBEROF_TASKS * [None]  # list of float, size = numberof_tasks
+        self.factorial_costs = mfeatask.NUMBEROF_TASKS * [sys.float_info.max]  # list of float, size = numberof_tasks
         self.factorial_rank = mfeatask.NUMBEROF_TASKS * [None]  # list of uint, size = numberof_tasks
         self.accuracy = mfeatask.NUMBEROF_TASKS * [None]  # list of float, size = numberof_tasks
 

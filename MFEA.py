@@ -28,7 +28,7 @@ class MFEA:
         cf_distributionindex = 2.0              # crossover factor, index of Simulated Binary Crossover
         mf_randommatingprobability = 1.0        # mutation factor, random mating probability
         mf_polynomialmutationindex = 5.0        # mutation factor, index of Polynomial Mutation Operator
-        mf_mutationratio = 0.5                 # mutation factor,
+        mf_mutationratio = 0.5                  # mutation factor,
 
         generation = 0
         while generation < self.generation_size:
@@ -70,3 +70,17 @@ class MFEA:
 
                 child1.forward_eval(self.X_train, self.Y_train)
                 child2.forward_eval(self.X_train, self.Y_train)
+
+            # update rank for each task
+            for task in range(mfeatask.NUMBEROF_TASKS):
+                self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
+                for i, idv in enumerate(self.population):
+                    idv.factorial_rank[task] = i + 1
+
+            # calculate scala fitness
+            for idv in self.population:
+                idv.scalar_fitness = 1.0 / np.min(idv.factorial_rank)
+
+            self.population.sort(key=lambda chromo: chromo.scalar_fitness, reverse=True)
+
+        print('test')

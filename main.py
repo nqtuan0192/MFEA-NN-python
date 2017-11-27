@@ -18,7 +18,7 @@ def main():
     #test_forward_propagation()
 
     inputHandler = InputHandler()
-    X_train, Y_train = inputHandler.ionosphere(link=mfeatask.DATASET_IONOSPHERE)
+    X_train, Y_train = inputHandler.creditScreening(link=mfeatask.DATASET_CREDITSCREENING)
     mfeatask.TRAINING_SIZE = X_train.shape[1]
     mfeatask.TESTING_SIZE = X_train.shape[1]
 
