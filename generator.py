@@ -38,7 +38,7 @@ def increment(X, times):
         cur_times += 1
     
 def main():
-    N = 3
+    N = 5
     generateTestSet(N)
     pass
 if __name__ == '__main__':
