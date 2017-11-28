@@ -78,7 +78,7 @@ class Chromosome:
         L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
 
         self.factorial_costs[self.skill_factor] = cost
-        return cost #+ L2_regularization_cost
+        return cost + L2_regularization_cost
 
 
 

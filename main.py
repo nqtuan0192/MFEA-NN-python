@@ -6,11 +6,11 @@ import MFEATask as mfeatask
 from Chromosome import *
 from MFEA import *
 from InputHandler import *
-from NbitGenerator import generateNbitDataSet
+
 
 def prepareDataSet():
     inputHandler = InputHandler()
-    X_data, Y_data = inputHandler.ticTacToe(link=mfeatask.DATASET_TICTACTOE)
+    X_data, Y_data = inputHandler.generateNbitDataSet(8)#ticTacToe(link=mfeatask.DATASET_TICTACTOE)
     m = X_data.shape[1] # number of samples
 
     train_ratio = 0.7
@@ -31,7 +31,6 @@ def prepareDataSet():
     return X_train, Y_train, X_test, Y_test
 
 def main():
-    x, y = generateNbitDataSet(3)
     #test_forward_propagation()
     X_train, Y_train, X_test, Y_test = prepareDataSet()
 
