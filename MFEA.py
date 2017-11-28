@@ -118,3 +118,12 @@ class MFEA:
             print('         ', task, ' best acc = ', self.population[0].accuracy[task])
 
         print('test')
+
+    def testPredict(self):
+        n = 5
+        for i in range(n):
+            idx = np.random.randint(self.X_test.shape[1])
+            y = self.Y_test[:, idx]
+            yp = self.population[0].predict(self.X_test[:, idx])
+            print('compare ', y, ' ', yp)
+

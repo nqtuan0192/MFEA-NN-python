@@ -44,6 +44,7 @@ def main():
     mfea.evolution()
     mfea.sumarizeTrainingStep()
     mfea.revalAccuracyOnTestingData()
+    mfea.testPredict()
 
 
 
