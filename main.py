@@ -31,6 +31,7 @@ def prepareDataSet():
     return X_train, Y_train, X_test, Y_test
 
 def main():
+    x, y = generateNbitDataSet(3)
     #test_forward_propagation()
     X_train, Y_train, X_test, Y_test = prepareDataSet()
 
@@ -44,6 +45,8 @@ def main():
     mfea.evolution()
     mfea.sumarizeTrainingStep()
     mfea.revalAccuracyOnTestingData()
+
+
 
 
 if __name__ == "__main__":
