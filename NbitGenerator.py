@@ -10,22 +10,21 @@ def generateNbitDataSet(N):
         #print(X[i].astype(float))
     
     #X = X.T
+    
     np.random.shuffle(X)
-    # print(X)
-    for i in range(0, len(X)):
-        for j in range(0, len(X[i])):
-            count = np.count_nonzero(X[::1, j])
-            #print(count)
-            if count % 2 == 0: 
-                Y[0][j] = 0
-            else:
-                Y[0][j] = 1
-
-    # print('X')
-    # print(X.astype(float).T)
-    # print('Y')
-    # print(Y.astype(float))
-    return X.astype(float).T, Y.astype(float)
+    X = X.T
+    for j in range(0, dim[0]):
+        count = np.count_nonzero(X[::1, j])
+        #print(count)
+        if count % 2 == 0: 
+            Y[0][j] = 0
+        else:
+            Y[0][j] = 1
+    print('X')
+    print(X.astype(float))
+    print('Y')
+    print(Y.astype(float))
+    return X.astype(float), Y.astype(float)
     pass
 
 
