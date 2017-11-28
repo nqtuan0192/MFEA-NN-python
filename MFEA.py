@@ -116,3 +116,5 @@ class MFEA:
             self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
             print('--- Task ', task, ' best mse = ', self.population[0].factorial_costs[task])
             print('         ', task, ' best acc = ', self.population[0].accuracy[task])
+
+        print('test')

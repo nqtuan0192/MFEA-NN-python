@@ -28,7 +28,7 @@ def prepareDataSet():
 
     mfeatask.redefineTasks()
 
-    return X_train, Y_train, X_test, Y_test
+    return X_data, Y_data, X_data, Y_data
 
 def main():
     #test_forward_propagation()
