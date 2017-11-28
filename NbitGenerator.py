@@ -1,5 +1,5 @@
 import numpy as np
-def generateTestSet(N):
+def generateNbitDataSet(N):
     dim = [int(N), int(2**N)]
     sample = np.random.rand(dim[0], dim[1])
     X = np.empty(dim, dtype=bool)
@@ -29,7 +29,7 @@ def generateTestSet(N):
     
 def main():
     N = 7
-    generateTestSet(N)
+    generateNbitDataSet(N)
     pass
 if __name__ == '__main__':
     main()

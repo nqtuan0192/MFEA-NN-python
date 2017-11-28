@@ -6,19 +6,20 @@ import MFEATask as mfeatask
 from Chromosome import *
 from MFEA import *
 from InputHandler import *
+from NbitGenerator import generateNbitDataSet
 
-
-def my_function():
-    print('donothing')
-
-def my_function_two():
-    print('dosomething')
-
-def main():
-    #test_forward_propagation()
-
+def prepareDataSet():
     inputHandler = InputHandler()
-    X_train, Y_train = inputHandler.creditScreening(link=mfeatask.DATASET_CREDITSCREENING)
+    X_data, Y_data = inputHandler.ticTacToe(link=mfeatask.DATASET_TICTACTOE)
+    m = X_data.shape[1] # number of samples
+
+    train_ratio = 0.7
+
+    X_train = X_data[:, :int(train_ratio * m)]
+    Y_train = Y_data[:, :int(train_ratio * m)]
+    X_test = X_data[:, int(train_ratio * m):]
+    Y_test = Y_data[:, int(train_ratio * m):]
+
     mfeatask.TRAINING_SIZE = X_train.shape[1]
     mfeatask.TESTING_SIZE = X_train.shape[1]
 
@@ -27,16 +28,22 @@ def main():
 
     mfeatask.redefineTasks()
 
+    return X_train, Y_train, X_test, Y_test
+
+def main():
+    #test_forward_propagation()
+    X_train, Y_train, X_test, Y_test = prepareDataSet()
+
     print('number of tasks =', mfeatask.NUMBEROF_TASKS)
     print('number of layers =', mfeatask.NUMBEROF_LAYERS)
     print(mfeatask.TASKS_LAYERSIZE)
     print(mfeatask.TASKS)
     print(mfeatask.TASK_MAX)
 
-    mfea = MFEA(X_train, Y_train, 90, 1000)
+    mfea = MFEA(X_train, Y_train, X_test, Y_test, 90, 1000)
     mfea.evolution()
-
-
+    mfea.sumarizeTrainingStep()
+    mfea.revalAccuracyOnTestingData()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 from Chromosome import *
 
@@ -8,13 +9,19 @@ import MFEATask as mfeatask
 
 
 class MFEA:
-    def __init__(self, X_train, Y_train, pop_size = 90, gen_size = 1000):
+    def __init__(self, X_train, Y_train, X_test, Y_test, pop_size = 90, gen_size = 1000):
         self.X_train = X_train
         self.Y_train = Y_train
+        self.X_test = X_test
+        self.Y_test = Y_test
 
         self.population_size = pop_size
         self.generation_size = gen_size
         self.population = 2 * pop_size * [None]
+
+        self.mse = {}
+        for task in range(mfeatask.NUMBEROF_TASKS):
+            self.mse['mse' + str(task)] = []
 
         for i in range(pop_size):
             self.population[i], self.population[i + pop_size] = Chromosome(), Chromosome()
@@ -77,6 +84,8 @@ class MFEA:
                 for i, idv in enumerate(self.population):
                     idv.factorial_rank[task] = i + 1
 
+                self.mse['mse' + str(task)].append(self.population[0].factorial_costs[task])
+
             # calculate scala fitness
             for idv in self.population:
                 idv.scalar_fitness = 1.0 / np.min(idv.factorial_rank)
@@ -84,7 +93,26 @@ class MFEA:
             self.population.sort(key=lambda chromo: chromo.scalar_fitness, reverse=True)
 
 
+    def sumarizeTrainingStep(self):
+        x = np.arange(0, self.generation_size, 1)
+        color = ['blue', 'green', 'red', 'yellow', 'black']
+        for task in range(mfeatask.NUMBEROF_TASKS):
+            plt.plot(x, self.mse['mse' + str(task)], color[task])
+        plt.show()
+
+
+    def revalAccuracyOnTestingData(self):
+        print('On training set:')
         for idv in self.population:
             idv.forward_eval(self.X_train, self.Y_train, is_eval_acc=True)
-
-        print('test')
+        for task in range(mfeatask.NUMBEROF_TASKS):
+            self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
+            print('--- Task ', task, ' best mse = ', self.population[0].factorial_costs[task])
+            print('         ', task, ' best acc = ', self.population[0].accuracy[task])
+        print('On testing set:')
+        for idv in self.population:
+            idv.forward_eval(self.X_test, self.Y_test, is_eval_acc=True)
+        for task in range(mfeatask.NUMBEROF_TASKS):
+            self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
+            print('--- Task ', task, ' best mse = ', self.population[0].factorial_costs[task])
+            print('         ', task, ' best acc = ', self.population[0].accuracy[task])
