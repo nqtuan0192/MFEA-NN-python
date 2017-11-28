@@ -11,7 +11,7 @@ def generateTestSet(N):
     
     #X = X.T
     np.random.shuffle(X)
-    print(X)
+
     for i in range(0, len(X)):
         for j in range(0, len(X[i])):
             count = np.count_nonzero(X[::1, j])
@@ -21,11 +21,7 @@ def generateTestSet(N):
             else:
                 Y[0][j] = 1
 
-    print('X')
-    print(X.astype(float).T)
-    print('Y')
-    print(Y.astype(float))
-    return X, Y
+    return X.astype(float), Y.astype(float)
     pass
 def increment(X, times):
     cur_times = 0
