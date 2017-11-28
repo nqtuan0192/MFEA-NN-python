@@ -26,7 +26,7 @@ class InputHandler:
                 if(row[-1] == 'positive'):
                     output_tmp.append(1)
                 else:
-                    output_tmp.append(-1)
+                    output_tmp.append(0)
 
             input_arr = np.array(input_tmp)
             output_arr = np.array(output_tmp)
