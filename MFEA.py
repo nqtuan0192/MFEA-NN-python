@@ -20,8 +20,10 @@ class MFEA:
         self.population = 2 * pop_size * [None]
 
         self.mse = {}
+        self.best_individuals = {}
         for task in range(mfeatask.NUMBEROF_TASKS):
             self.mse['mse' + str(task)] = []
+            self.best_individuals['best' + str(task)] = None
 
         for i in range(pop_size):
             self.population[i], self.population[i + pop_size] = Chromosome(), Chromosome()
@@ -109,21 +111,23 @@ class MFEA:
             self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
             print('--- Task ', task, ' best mse = ', self.population[0].factorial_costs[task])
             print('         ', task, ' best acc = ', self.population[0].accuracy[task])
+
         print('On testing set:')
         for idv in self.population:
             idv.forward_eval(self.X_test, self.Y_test, is_eval_acc=True)
+
         for task in range(mfeatask.NUMBEROF_TASKS):
             self.population.sort(key=lambda chromo: chromo.factorial_costs[task])
+            self.best_individuals['best' + str(task)] = self.population[0]
             print('--- Task ', task, ' best mse = ', self.population[0].factorial_costs[task])
             print('         ', task, ' best acc = ', self.population[0].accuracy[task])
 
+            AL = self.best_individuals['best' + str(task)].forward_eval(self.X_test, self.Y_test, is_eval_acc=True)
+            n = 5
+            for i in range(n):
+                idx = np.random.randint(self.X_test.shape[1])
+                y = self.Y_test[:, idx]
+                yp = AL[:, idx]
+                print('compare ', y, ' ', yp)
+
         print('test')
-
-    def testPredict(self):
-        n = 5
-        for i in range(n):
-            idx = np.random.randint(self.X_test.shape[1])
-            y = self.Y_test[:, idx]
-            yp = self.population[0].predict(self.X_test[:, idx])
-            print('compare ', y, ' ', yp)
-

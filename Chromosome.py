@@ -61,12 +61,8 @@ class Chromosome:
         bL = self.parameters['b' + str(L)].flatten()
         bL = bL[0:layers[L]].reshape(layers[L], 1)
 
-        ZL =  np.dot(WL, A) + bL
+        ZL = np.dot(WL, A) + bL
         AL = np_sigmoid(ZL)
-
-        if is_eval_acc:
-            acc = ((Y > 0.5) == (AL > 0.5))
-            self.accuracy[self.skill_factor] = np.sum(acc) / len(acc.squeeze())
 
         cost = 0.5 * np.mean((Y - AL) ** 2) # 1 / (2 * m) * (Y - Ypredict)^2
 
@@ -77,30 +73,11 @@ class Chromosome:
             L2_regularization_cost = L2_regularization_cost + np.sum(np.square(self.parameters['W' + str(l)]))
         L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
 
-        self.factorial_costs[self.skill_factor] = cost
-        return cost #+ L2_regularization_cost
+        self.factorial_costs[self.skill_factor] = cost #+ L2_regularization_cost
 
-    def predict(self, x):
-        L = mfeatask.TASKS_LAYERSIZE[self.skill_factor]
-        layers = mfeatask.TASKS[self.skill_factor]
-
-        A = x
-        for l in range(1, L):
-            Wl = self.parameters['W' + str(l)].flatten()
-            Wl = Wl[0:layers[l] * layers[l - 1]].reshape(layers[l], layers[l - 1])
-            bl = self.parameters['b' + str(l)].flatten()
-            bl = bl[0:layers[l]].reshape(layers[l], 1)
-
-            Z = np.dot(Wl, A) + bl
-            A = np_relu(Z)
-
-        WL = self.parameters['W' + str(L)].flatten()
-        WL = WL[0:layers[L] * layers[L - 1]].reshape(layers[L], layers[L - 1])
-        bL = self.parameters['b' + str(L)].flatten()
-        bL = bL[0:layers[L]].reshape(layers[L], 1)
-
-        ZL =  np.dot(WL, A) + bL
-        AL = np_sigmoid(ZL)
+        if is_eval_acc:
+            acc = ((Y > 0.5) == (AL > 0.5))
+            self.accuracy[self.skill_factor] = np.sum(acc) / len(acc.squeeze())
 
         return AL
 

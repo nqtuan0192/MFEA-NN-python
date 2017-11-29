@@ -10,7 +10,9 @@ from InputHandler import *
 
 def prepareDataSet():
     inputHandler = InputHandler()
-    X_data, Y_data = inputHandler.generateNbitDataSet(8)#ticTacToe(link=mfeatask.DATASET_TICTACTOE)
+    #X_data, Y_data = inputHandler.nbit(mfeatask.DATASET_NBIT_INP, mfeatask.DATASET_NBIT_OUT)
+    X_data, Y_data = inputHandler.generateNbitDataSet(8)
+    #X_data, Y_data = inputHandler.ticTacToe(link=mfeatask.DATASET_TICTACTOE)
     m = X_data.shape[1] # number of samples
 
     train_ratio = 0.7
@@ -20,11 +22,17 @@ def prepareDataSet():
     X_test = X_data[:, int(train_ratio * m):]
     Y_test = Y_data[:, int(train_ratio * m):]
 
-    mfeatask.TRAINING_SIZE = X_train.shape[1]
-    mfeatask.TESTING_SIZE = X_train.shape[1]
+    '''mfeatask.TRAINING_SIZE = X_train.shape[1]
+    mfeatask.TESTING_SIZE = X_test.shape[1]
 
     mfeatask.NUMBEROF_INPUT = X_train.shape[0]
-    mfeatask.NUMBEROF_OUTPUT = Y_train.shape[0]
+    mfeatask.NUMBEROF_OUTPUT = Y_train.shape[0]'''
+
+    mfeatask.TRAINING_SIZE = X_data.shape[1]
+    mfeatask.TESTING_SIZE = X_data.shape[1]
+
+    mfeatask.NUMBEROF_INPUT = X_data.shape[0]
+    mfeatask.NUMBEROF_OUTPUT = Y_data.shape[0]
 
     mfeatask.redefineTasks()
 
@@ -44,8 +52,6 @@ def main():
     mfea.evolution()
     mfea.sumarizeTrainingStep()
     mfea.revalAccuracyOnTestingData()
-    mfea.testPredict()
-
 
 
 

@@ -21,7 +21,7 @@ class InputHandler:
                     elif(row[i] == 'o'):
                         tmp.append(0)
                     else:
-                        tmp.append(-1)
+                        tmp.append(0)
                 input_tmp.append(tmp)
                 if(row[-1] == 'positive'):
                     output_tmp.append(1)
@@ -153,6 +153,31 @@ class InputHandler:
         print(Y.astype(float))
         return X.astype(float), Y.astype(float)
         pass
+
+    def nbit_in(self, link):
+        with open(link, "r") as f:
+            reader = csv.reader(f, delimiter='\t')
+            data_list = list(reader)
+            in_arr = np.array(data_list, dtype=float)
+            #print(in_arr)
+            #print(data_list)
+            return in_arr            
+        pass
+    def nbit_out(self, link):
+        with open(link, 'r') as f:
+            reader = csv.reader(f)
+            data_list = list(reader)
+            out_arr = np.array(data_list, dtype=float)
+            #print(out_arr)
+            return out_arr
+        pass
+    def nbit(self, link_in, link_out):
+        in_arr = self.nbit_in(link_in)
+        out_arr = self.nbit_out(link_out)
+        #print(in_arr, out_arr)
+        return in_arr.T, out_arr.T
+        pass
+                    
 
 
 def increment(X, times):
