@@ -21,12 +21,12 @@ class InputHandler:
                     elif(row[i] == 'o'):
                         tmp.append(0)
                     else:
-                        tmp.append(-1)
+                        tmp.append(0)
                 input_tmp.append(tmp)
                 if(row[-1] == 'positive'):
                     output_tmp.append(1)
                 else:
-                    output_tmp.append(-1)
+                    output_tmp.append(0)
 
             input_arr = np.array(input_tmp)
             output_arr = np.array(output_tmp)
@@ -125,7 +125,29 @@ class InputHandler:
             #print(out_minmax)
             return in_minmax, out_minmax
         pass
-        
+    def nbit_in(self, link):
+        with open(link, "r") as f:
+            reader = csv.reader(f, delimiter='\t')
+            data_list = list(reader)
+            in_arr = np.array(data_list, dtype=float)
+            #print(in_arr)
+            #print(data_list)
+            return in_arr            
+        pass
+    def nbit_out(self, link):
+        with open(link, 'r') as f:
+            reader = csv.reader(f)
+            data_list = list(reader)
+            out_arr = np.array(data_list, dtype=float)
+            #print(out_arr)
+            return out_arr
+        pass
+    def nbit(self, link_in, link_out):
+        in_arr = self.nbit_in(link_in)
+        out_arr = self.nbit_out(link_out)
+        #print(in_arr, out_arr)
+        return in_arr, out_arr
+        pass
                     
 
 
