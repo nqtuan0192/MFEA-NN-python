@@ -37,7 +37,7 @@ class MFEA:
         cf_distributionindex = 2.0              # crossover factor, index of Simulated Binary Crossover
         mf_randommatingprobability = 1.0        # mutation factor, random mating probability
         mf_polynomialmutationindex = 5.0        # mutation factor, index of Polynomial Mutation Operator
-        mf_mutationratio = 0.5                  # mutation factor,
+        mf_mutationratio = 0.05                  # mutation factor,
 
         generation = 0
         while generation < self.generation_size:

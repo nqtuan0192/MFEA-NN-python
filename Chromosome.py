@@ -66,14 +66,14 @@ class Chromosome:
 
         cost = 0.5 * np.mean((Y - AL) ** 2) # 1 / (2 * m) * (Y - Ypredict)^2
 
-        lambd = 0.1
+        lambd = 1.0
         m = Y.shape[1]
         L2_regularization_cost = 0
         for l in range(1, L + 1):
             L2_regularization_cost = L2_regularization_cost + np.sum(np.square(self.parameters['W' + str(l)]))
         L2_regularization_cost = lambd / (2 * m) * L2_regularization_cost
 
-        self.factorial_costs[self.skill_factor] = cost #+ L2_regularization_cost
+        self.factorial_costs[self.skill_factor] = cost + L2_regularization_cost
 
         if is_eval_acc:
             acc = ((Y > 0.5) == (AL > 0.5))
